@@ -1,0 +1,29 @@
+# Java
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# Maven
+assinador/target/
+
+# Go
+assinatura/assinatura
+assinatura/assinatura.exe
+simulador/simulador
+simulador/simulador.exe
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude
+.claude/
+CLAUDE.md

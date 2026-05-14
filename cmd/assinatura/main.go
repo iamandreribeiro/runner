@@ -11,6 +11,9 @@ import (
 // Deve ser var (não const) para que o linker consiga sobrescrever o valor.
 var version = "dev"
 
+// jarPath pode ser sobrescrito pela flag global --jar.
+var jarPath string
+
 var rootCmd = &cobra.Command{
 	Use:   "assinatura",
 	Short: "CLI do Sistema Runner — invoca o assinador.jar via linha de comandos",
@@ -25,6 +28,8 @@ var versionCmd = &cobra.Command{
 }
 
 func init() {
+	rootCmd.PersistentFlags().StringVar(&jarPath, "jar", "",
+		"Caminho para o assinador.jar (padrão: ~/.hubsaude/assinador.jar)")
 	rootCmd.AddCommand(versionCmd)
 }
 

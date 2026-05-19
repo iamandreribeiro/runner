@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/kyriosdata/runner/internal/invoker"
 	"github.com/spf13/cobra"
 )
 
@@ -42,9 +43,37 @@ func init() {
 }
 
 func runValidate(cmd *cobra.Command, args []string) error {
-	fmt.Fprintln(os.Stderr, "validate: invocação do assinador.jar ainda não implementada (internal/invoker)")
-	fmt.Fprintf(cmd.OutOrStdout(), "validate --signature-id %s --target %s --data %s (local=%v)\n",
-		validateFlags.signatureID, validateFlags.target, validateFlags.data, validateFlags.local)
+	jar, err := resolveJar(jarPath)
+	if err != nil {
+		return err
+	}
 
+	inv, err := newLocalInvoker(jar)
+	if err != nil {
+		return err
+	}
+
+	params := invoker.ValidateParams{
+		SignatureID: validateFlags.signatureID,
+		Target:      validateFlags.target,
+		Data:        validateFlags.data,
+	}
+
+	result, err := inv.Validate(params)
+	if err != nil {
+		return fmt.Errorf("falha ao invocar o assinador.jar: %w", err)
+	}
+
+	if result.ExitCode != 0 {
+		fmt.Fprint(os.Stderr, invoker.FormatError(result))
+		os.Exit(result.ExitCode)
+	}
+
+	out, err := invoker.ParseValidateOutput(result.Stdout)
+	if err != nil {
+		return fmt.Errorf("resposta inesperada do assinador.jar: %w", err)
+	}
+
+	fmt.Fprint(cmd.OutOrStdout(), invoker.FormatValidate(out))
 	return nil
 }

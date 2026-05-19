@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/kyriosdata/runner/internal/invoker"
 	"github.com/spf13/cobra"
 )
 
@@ -58,9 +59,39 @@ func runSign(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("--when deve estar no formato ISO-8601 (ex.: 2026-04-08T12:00:00Z): %w", err)
 	}
 
-	fmt.Fprintln(os.Stderr, "sign: invocação do assinador.jar ainda não implementada (internal/invoker)")
-	fmt.Fprintf(cmd.OutOrStdout(), "sign --type %s --when %s --who %s --target %s --sig-format %s (local=%v)\n",
-		signFlags.signType, signFlags.when, signFlags.who, signFlags.target, signFlags.sigFormat, signFlags.local)
+	jar, err := resolveJar(jarPath)
+	if err != nil {
+		return err
+	}
 
+	inv, err := newLocalInvoker(jar)
+	if err != nil {
+		return err
+	}
+
+	params := invoker.SignParams{
+		Type:      signFlags.signType,
+		When:      signFlags.when,
+		Who:       signFlags.who,
+		Target:    signFlags.target,
+		SigFormat: signFlags.sigFormat,
+	}
+
+	result, err := inv.Sign(params)
+	if err != nil {
+		return fmt.Errorf("falha ao invocar o assinador.jar: %w", err)
+	}
+
+	if result.ExitCode != 0 {
+		fmt.Fprint(os.Stderr, invoker.FormatError(result))
+		os.Exit(result.ExitCode)
+	}
+
+	out, err := invoker.ParseSignOutput(result.Stdout)
+	if err != nil {
+		return fmt.Errorf("resposta inesperada do assinador.jar: %w", err)
+	}
+
+	fmt.Fprint(cmd.OutOrStdout(), invoker.FormatSign(out))
 	return nil
 }

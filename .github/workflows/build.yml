@@ -58,8 +58,8 @@ jobs:
           GOARCH: ${{ matrix.goarch }}
         run: |
           mkdir -p dist
-          go build -o dist/assinatura-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.ext }} ./cmd/assinatura
-          go build -o dist/simulador-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.ext }} ./cmd/simulador
+          go build -o dist/assinatura-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.ext }} ./apps/assinatura
+          go build -o dist/simulador-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.ext }} ./apps/simulador
 
       - name: Publicar artefatos
         uses: actions/upload-artifact@v4

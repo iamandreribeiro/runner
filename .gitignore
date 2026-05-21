@@ -4,13 +4,13 @@
 !.mvn/wrapper/maven-wrapper.jar
 
 # Maven
-assinador/target/
+apps/assinador/target/
 
 # Go
-assinatura/assinatura
-assinatura/assinatura.exe
-simulador/simulador
-simulador/simulador.exe
+apps/assinatura/assinatura
+apps/assinatura/assinatura.exe
+apps/simulador/simulador
+apps/simulador/simulador.exe
 
 # IDE
 .idea/

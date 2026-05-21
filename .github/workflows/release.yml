@@ -48,13 +48,13 @@ jobs:
           LDFLAGS="-X main.version=${VERSION}"
           mkdir -p dist
 
-          GOOS=linux   GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o dist/assinatura-${VERSION}-linux-amd64   ./cmd/assinatura
-          GOOS=windows GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o dist/assinatura-${VERSION}-windows-amd64.exe ./cmd/assinatura
-          GOOS=darwin  GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o dist/assinatura-${VERSION}-darwin-amd64  ./cmd/assinatura
+          GOOS=linux   GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o dist/assinatura-${VERSION}-linux-amd64   ./apps/assinatura
+          GOOS=windows GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o dist/assinatura-${VERSION}-windows-amd64.exe ./apps/assinatura
+          GOOS=darwin  GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o dist/assinatura-${VERSION}-darwin-amd64  ./apps/assinatura
 
-          GOOS=linux   GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o dist/simulador-${VERSION}-linux-amd64   ./cmd/simulador
-          GOOS=windows GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o dist/simulador-${VERSION}-windows-amd64.exe ./cmd/simulador
-          GOOS=darwin  GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o dist/simulador-${VERSION}-darwin-amd64  ./cmd/simulador
+          GOOS=linux   GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o dist/simulador-${VERSION}-linux-amd64   ./apps/simulador
+          GOOS=windows GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o dist/simulador-${VERSION}-windows-amd64.exe ./apps/simulador
+          GOOS=darwin  GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o dist/simulador-${VERSION}-darwin-amd64  ./apps/simulador
 
       - name: Gerar checksums SHA256
         run: cd dist && sha256sum * > checksums.txt

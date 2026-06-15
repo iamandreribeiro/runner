@@ -33,9 +33,6 @@ linters:
           - errcheck
           - gosec
         path: _test\.go
-      - linters:
-          - misspell
-        path: apps/assinatura/main\.go
     paths:
       - third_party$
       - builtin$

@@ -18,7 +18,7 @@ var jarPath string
 
 var rootCmd = &cobra.Command{
 	Use:           "assinatura",
-	Short:         "CLI do Sistema Runner — invoca o assinador.jar via linha de comando",
+	Short:         "CLI do Sistema Runner — invoca o assinador.jar pela CLI",
 	SilenceErrors: true,
 	SilenceUsage:  true,
 }

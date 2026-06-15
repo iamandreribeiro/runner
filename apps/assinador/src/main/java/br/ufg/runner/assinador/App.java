@@ -1,5 +1,7 @@
 package br.ufg.runner.assinador;
 
+import br.ufg.runner.assinador.cli.Args;
+import br.ufg.runner.assinador.cli.ArgsException;
 import br.ufg.runner.assinador.model.SignRequest;
 import br.ufg.runner.assinador.model.SignResponse;
 import br.ufg.runner.assinador.model.ValidateRequest;
@@ -11,8 +13,6 @@ import br.ufg.runner.assinador.validation.ValidationException;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Ponto de entrada do assinador.jar.
@@ -99,28 +99,42 @@ public final class App {
         };
     }
 
-    private int handleSign(final String[] args) {
-        final Map<String, String> opts = parseOptions(args);
-
-        final String type = opts.get("--type");
-        final String whenStr = opts.get("--when");
-        final String who = opts.get("--who");
-        final String target = opts.get("--target");
-        final String sigFormat = opts.get("--sig-format");
-
-        if (type == null || whenStr == null || who == null
-                || target == null || sigFormat == null) {
-            System.err.println("Erro: todos os parâmetros do sign são obrigatórios.");
+    private int handleSign(final String[] rawArgs) {
+        final Args opts;
+        try {
+            opts = Args.parser()
+                    .value("--type")
+                    .value("--when")
+                    .value("--who")
+                    .value("--target")
+                    .value("--sig-format")
+                    .parse(rawArgs);
+        } catch (ArgsException e) {
+            System.err.println("Erro de uso: " + e.getMessage());
             System.out.println(USAGE_MESSAGE);
             return EXIT_USAGE;
         }
 
+        final String type;
         final Instant when;
+        final String who;
+        final String target;
+        final String sigFormat;
         try {
-            when = Instant.parse(whenStr);
-        } catch (DateTimeParseException e) {
-            System.err.println("Erro: --when deve estar no formato ISO-8601 (ex.: 2026-04-08T12:00:00Z)");
-            return EXIT_VALIDATION;
+            type = opts.required("--type");
+            who = opts.required("--who");
+            target = opts.required("--target");
+            sigFormat = opts.required("--sig-format");
+            try {
+                when = Instant.parse(opts.required("--when"));
+            } catch (DateTimeParseException e) {
+                System.err.println("Erro: --when deve estar no formato ISO-8601 (ex.: 2026-04-08T12:00:00Z)");
+                return EXIT_VALIDATION;
+            }
+        } catch (ArgsException e) {
+            System.err.println("Erro de uso: " + e.getMessage());
+            System.out.println(USAGE_MESSAGE);
+            return EXIT_USAGE;
         }
 
         try {
@@ -140,15 +154,29 @@ public final class App {
         }
     }
 
-    private int handleValidate(final String[] args) {
-        final Map<String, String> opts = parseOptions(args);
+    private int handleValidate(final String[] rawArgs) {
+        final Args opts;
+        try {
+            opts = Args.parser()
+                    .value("--signature-id")
+                    .value("--target")
+                    .value("--data")
+                    .parse(rawArgs);
+        } catch (ArgsException e) {
+            System.err.println("Erro de uso: " + e.getMessage());
+            System.out.println(USAGE_MESSAGE);
+            return EXIT_USAGE;
+        }
 
-        final String signatureId = opts.get("--signature-id");
-        final String target = opts.get("--target");
-        final String data = opts.get("--data");
-
-        if (signatureId == null || target == null || data == null) {
-            System.err.println("Erro: todos os parâmetros do validate são obrigatórios.");
+        final String signatureId;
+        final String target;
+        final String data;
+        try {
+            signatureId = opts.required("--signature-id");
+            target = opts.required("--target");
+            data = opts.required("--data");
+        } catch (ArgsException e) {
+            System.err.println("Erro de uso: " + e.getMessage());
             System.out.println(USAGE_MESSAGE);
             return EXIT_USAGE;
         }
@@ -166,15 +194,5 @@ public final class App {
             System.err.println("Erro interno: " + e.getMessage());
             return EXIT_INTERNAL;
         }
-    }
-
-    static Map<String, String> parseOptions(final String[] args) {
-        final Map<String, String> opts = new HashMap<>();
-        for (int i = 0; i < args.length - 1; i += 2) {
-            if (args[i].startsWith("--")) {
-                opts.put(args[i], args[i + 1]);
-            }
-        }
-        return opts;
     }
 }

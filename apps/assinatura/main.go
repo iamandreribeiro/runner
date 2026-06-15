@@ -1,9 +1,11 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
+	"github.com/kyriosdata/runner/internal/cli"
 	"github.com/spf13/cobra"
 )
 
@@ -15,8 +17,10 @@ var version = "dev"
 var jarPath string
 
 var rootCmd = &cobra.Command{
-	Use:   "assinatura",
-	Short: "CLI do Sistema Runner — invoca o assinador.jar via linha de comandos",
+	Use:           "assinatura",
+	Short:         "CLI do Sistema Runner — invoca o assinador.jar via linha de comandos",
+	SilenceErrors: true,
+	SilenceUsage:  true,
 }
 
 var versionCmd = &cobra.Command{
@@ -34,7 +38,15 @@ func init() {
 }
 
 func main() {
-	if err := rootCmd.Execute(); err != nil {
-		os.Exit(1)
+	err := rootCmd.Execute()
+	if err == nil {
+		return
 	}
+	var exitErr *cli.ExitError
+	if errors.As(err, &exitErr) {
+		fmt.Fprint(os.Stderr, exitErr.Message)
+		os.Exit(exitErr.Code)
+	}
+	fmt.Fprintln(os.Stderr, "Erro:", err)
+	os.Exit(1)
 }

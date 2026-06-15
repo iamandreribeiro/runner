@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"os"
 
+	"github.com/kyriosdata/runner/internal/cli"
 	"github.com/kyriosdata/runner/internal/invoker"
 	"github.com/spf13/cobra"
 )
@@ -65,8 +65,7 @@ func runValidate(cmd *cobra.Command, args []string) error {
 	}
 
 	if result.ExitCode != 0 {
-		fmt.Fprint(os.Stderr, invoker.FormatError(result))
-		os.Exit(result.ExitCode)
+		return cli.NewExitError(result.ExitCode, "%s", invoker.FormatError(result))
 	}
 
 	out, err := invoker.ParseValidateOutput(result.Stdout)

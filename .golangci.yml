@@ -1,0 +1,32 @@
+run:
+  timeout: 5m
+
+linters:
+  disable-all: true
+  enable:
+    - errcheck      # erros não verificados
+    - govet         # built-in go vet
+    - ineffassign   # atribuições sem efeito
+    - staticcheck   # análise estática ampla
+    - unused        # código morto
+    - misspell      # erros ortográficos
+    - gosec         # vulnerabilidades comuns
+    - revive        # estilo (substituto do golint)
+
+linters-settings:
+  revive:
+    rules:
+      - name: exported
+        disabled: true   # docstrings em português, não impomos en-US
+  gosec:
+    excludes:
+      - G304   # path traversal — paths já vêm de flags do usuário, intencional
+      - G107   # HTTP request URL — sob nosso controle no provisioner
+      - G110   # decompression bomb — JDK Adoptium é fonte confiável
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - errcheck
+        - gosec

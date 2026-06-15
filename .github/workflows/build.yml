@@ -24,8 +24,21 @@ jobs:
       - name: Analisar código (go vet)
         run: go vet ./...
 
-      - name: Executar testes
-        run: go test ./...
+      - name: Lint (golangci-lint)
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.61
+          args: --timeout=5m
+
+      - name: Executar testes (com cobertura)
+        run: go test -race -coverprofile=coverage.out -covermode=atomic ./...
+
+      - name: Publicar cobertura Go
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: go-coverage
+          path: coverage.out
 
   build:
     name: Build multiplataforma

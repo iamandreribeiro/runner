@@ -13,7 +13,6 @@ linters:
   settings:
     gosec:
       excludes:
-        - G204
         - G304
         - G107
         - G110

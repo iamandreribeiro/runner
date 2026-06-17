@@ -26,6 +26,7 @@ func (l *LocalInvoker) javaCmd() string {
 
 func (l *LocalInvoker) run(args ...string) (*Result, error) {
 	cmdArgs := append([]string{"-jar", l.JarPath}, args...)
+	// #nosec G204 -- fixed "java -jar" invocation; args come from validated CLI flags.
 	cmd := exec.Command(l.javaCmd(), cmdArgs...)
 
 	var stdout, stderr bytes.Buffer
